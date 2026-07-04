@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="A cute arcade birthday surprise for a 25th birthday on July 5."
+      content="A cute 8-bit birthday arcade room with a slot machine opening."
     />
-    <title>Player 2 Birthday Quest</title>
+    <title>Birthday Arcade</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,116 +18,115 @@
   </head>
   <body>
     <div class="pixel-sky" aria-hidden="true">
-      <span style="--x: 9%; --y: 18%; --d: 0s"></span>
-      <span style="--x: 31%; --y: 9%; --d: 1.2s"></span>
-      <span style="--x: 52%; --y: 15%; --d: 0.5s"></span>
-      <span style="--x: 73%; --y: 8%; --d: 1.8s"></span>
-      <span style="--x: 88%; --y: 22%; --d: 0.9s"></span>
+      <span style="--x: 8%; --y: 16%; --d: 0s"></span>
+      <span style="--x: 28%; --y: 8%; --d: 0.6s"></span>
+      <span style="--x: 55%; --y: 13%; --d: 1s"></span>
+      <span style="--x: 78%; --y: 9%; --d: 1.5s"></span>
+      <span style="--x: 91%; --y: 24%; --d: 0.3s"></span>
     </div>
 
-    <main class="cabinet-shell">
-      <section class="arcade" aria-labelledby="site-title">
-        <div class="marquee">
-          <span class="marquee-light"></span>
-          <span class="marquee-light"></span>
-          <span class="marquee-light"></span>
-          <p>Birthday Quest</p>
-          <span class="marquee-light"></span>
-          <span class="marquee-light"></span>
-          <span class="marquee-light"></span>
-        </div>
+    <main>
+      <section class="slot-gate" id="slot-gate" aria-labelledby="slot-title">
+        <div class="slot-machine">
+          <div class="slot-top">
+            <span class="slot-light"></span>
+            <h1 id="slot-title">Birthday Jackpot</h1>
+            <span class="slot-light"></span>
+          </div>
 
-        <div class="screen-wrap">
-          <div class="status-bar" aria-label="Birthday status">
-            <div>
-              <span>HP</span>
-              <strong id="heart-count">00</strong><span>/25</span>
+          <div class="slot-screen">
+            <p class="eyebrow">Insert 3 lucky spins</p>
+            <div class="reels" aria-label="Slot machine reels">
+              <div class="reel" id="reel-1">07</div>
+              <div class="reel" id="reel-2">14</div>
+              <div class="reel" id="reel-3">21</div>
             </div>
-            <div>
-              <span>Mode</span>
-              <strong id="birthday-mode">Loading</strong>
-            </div>
+            <p class="slot-message" id="slot-message">
+              Spin until the machine lands on 25 / 25 / 25.
+            </p>
+            <button class="big-button" id="spin-button" type="button">Spin Spin Spin</button>
+          </div>
+
+          <div class="slot-base">
+            <div class="coin-slot" aria-hidden="true"></div>
+            <p>Prize door locked</p>
+            <div class="lever" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="arcade-room is-hidden" id="arcade-room" aria-labelledby="room-title">
+        <header class="room-header">
+          <div>
+            <p class="eyebrow">Level 25 unlocked</p>
+            <h1 id="room-title">Happy Birthday, Player 2</h1>
+          </div>
+          <div class="status-bar" aria-label="Arcade progress">
+            <div><span>Tickets</span><strong id="ticket-count">00</strong></div>
+            <div><span>Rewards</span><strong id="reward-count">0/6</strong></div>
             <button class="icon-button" id="sound-toggle" type="button" aria-label="Toggle sound">
               <span aria-hidden="true">♪</span>
             </button>
           </div>
+        </header>
 
-          <div class="screen">
-            <div class="scanlines" aria-hidden="true"></div>
-            <section class="hero-panel">
-              <p class="eyebrow">July 5, 2026</p>
-              <h1 id="site-title">Happy 25th Birthday, Player 2</h1>
-              <p class="type-line" id="type-line">
-                Loading a soft little world for the girl I love...
-              </p>
-              <div class="countdown" aria-label="Countdown to birthday">
-                <div><strong id="days">00</strong><span>Days</span></div>
-                <div><strong id="hours">00</strong><span>Hours</span></div>
-                <div><strong id="minutes">00</strong><span>Min</span></div>
-                <div><strong id="seconds">00</strong><span>Sec</span></div>
-              </div>
-            </section>
-
-            <section class="quest-grid" aria-label="Birthday activities">
-              <article class="game-card">
-                <div class="card-heading">
-                  <span class="mini-icon heart-icon" aria-hidden="true"></span>
-                  <h2>Heart Catch</h2>
-                </div>
-                <p>Catch 25 hearts to unlock the final birthday message.</p>
-                <div class="game-stage" id="game-stage" tabindex="0" aria-label="Heart catch game">
-                  <div class="player" id="player" aria-hidden="true"></div>
-                  <div class="heart" id="falling-heart" aria-hidden="true"></div>
-                </div>
-                <div class="controls">
-                  <button type="button" data-move="-1" aria-label="Move left">◀</button>
-                  <button type="button" id="start-game">Start</button>
-                  <button type="button" data-move="1" aria-label="Move right">▶</button>
-                </div>
-              </article>
-
-              <article class="mail-card">
-                <div class="card-heading">
-                  <span class="mini-icon letter-icon" aria-hidden="true"></span>
-                  <h2>Love Mailbox</h2>
-                </div>
-                <div class="letters" id="letters" aria-label="Open love letters"></div>
-              </article>
-            </section>
-
-            <section class="memory-lane" aria-label="Birthday wishes">
-              <div class="pixel-avatar" aria-hidden="true">
-                <span class="bow"></span>
-                <span class="face"></span>
-              </div>
-              <div>
-                <p class="eyebrow">Achievement unlocked</p>
-                <h2>Level 25 looks cute on you</h2>
-                <p>
-                  Today is for your laugh, your softness, your stubborn little
-                  spark, and every tiny thing that makes loving you feel like my
-                  favorite side quest.
-                </p>
-              </div>
-            </section>
+        <section class="room-floor" aria-label="Explore arcade room">
+          <div class="wall-sign">
+            <span>25</span>
+            <p>Birthday Arcade</p>
+            <span>25</span>
           </div>
-        </div>
 
-        <div class="control-deck">
-          <button type="button" id="secret-button">Unlock Final Letter</button>
-          <div class="joystick" aria-hidden="true"><span></span></div>
-          <button type="button" id="confetti-button">Confetti</button>
-        </div>
+          <button class="station station-heart" type="button" data-station="heart">
+            <span class="cabinet-art heart-art"></span>
+            <strong>Heart Catch</strong>
+            <small>Win 25 hearts</small>
+          </button>
+
+          <button class="station station-mail" type="button" data-station="mail">
+            <span class="cabinet-art letter-art"></span>
+            <strong>Love Mail</strong>
+            <small>Open letters</small>
+          </button>
+
+          <button class="station station-coupon" type="button" data-station="coupons">
+            <span class="cabinet-art coupon-art"></span>
+            <strong>Coupon Booth</strong>
+            <small>Claim treats</small>
+          </button>
+
+          <button class="station station-plush" type="button" data-station="plush">
+            <span class="cabinet-art stitch-art"></span>
+            <strong>Plush Claw</strong>
+            <small>Special prize</small>
+          </button>
+
+          <button class="station station-memory" type="button" data-station="memory">
+            <span class="cabinet-art memory-art"></span>
+            <strong>Memory Quest</strong>
+            <small>Tiny promises</small>
+          </button>
+
+          <button class="station station-final locked" type="button" data-station="final">
+            <span class="cabinet-art trophy-art"></span>
+            <strong>Final Prize</strong>
+            <small id="final-lock">Locked</small>
+          </button>
+
+          <div class="room-player" aria-hidden="true">
+            <span class="bow"></span>
+          </div>
+        </section>
       </section>
     </main>
 
-    <dialog class="letter-dialog" id="letter-dialog">
+    <dialog class="arcade-dialog" id="arcade-dialog">
       <form method="dialog">
-        <button class="close-button" aria-label="Close letter">×</button>
+        <button class="close-button" aria-label="Close">x</button>
       </form>
-      <p class="eyebrow" id="dialog-kicker">Love letter</p>
+      <p class="eyebrow" id="dialog-kicker">Arcade prize</p>
       <h2 id="dialog-title">Title</h2>
-      <p id="dialog-body">Letter body</p>
+      <div id="dialog-body"></div>
     </dialog>
 
     <canvas id="confetti" aria-hidden="true"></canvas>

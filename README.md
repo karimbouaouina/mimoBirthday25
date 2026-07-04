@@ -1,20 +1,28 @@
-# Player 2 Birthday Quest
+# Birthday Arcade
 
-A tiny arcade-style birthday website for a 25th birthday on July 5, 2026.
+A static 8-bit birthday surprise site.
+
+Flow:
+
+1. Opening slot machine gate.
+2. She spins until the reels land on `25 / 25 / 25`.
+3. The page says `HAPPY BIRTHDAY` and opens a cute arcade room.
+4. She explores cabinets to unlock love letters, coupons, a Stitch plushie prize, a heart-catching mini-game, memories, and a final prize vault.
 
 ## Personalize
 
 Edit `script.js`:
 
 - `birthdayName`
-- `finalLetter`
-- the `letters` array
+- `letters`
+- `coupons`
+- final prize copy inside `finalView()`
 
-Edit `index.html` if you want to replace "Player 2" in the heading with her name or nickname.
+Edit `index.html` if you want to replace `Player 2` in the room heading with her name or nickname.
 
 ## Deploy on Vercel
 
-This is a static site. In Vercel, import the folder and keep the defaults:
+This is a static site. In Vercel, import this folder and keep the defaults:
 
 - Framework preset: `Other`
 - Build command: leave empty
