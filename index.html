@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A cute arcade birthday surprise for a 25th birthday on July 5."
+    />
+    <title>Player 2 Birthday Quest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="pixel-sky" aria-hidden="true">
+      <span style="--x: 9%; --y: 18%; --d: 0s"></span>
+      <span style="--x: 31%; --y: 9%; --d: 1.2s"></span>
+      <span style="--x: 52%; --y: 15%; --d: 0.5s"></span>
+      <span style="--x: 73%; --y: 8%; --d: 1.8s"></span>
+      <span style="--x: 88%; --y: 22%; --d: 0.9s"></span>
+    </div>
+
+    <main class="cabinet-shell">
+      <section class="arcade" aria-labelledby="site-title">
+        <div class="marquee">
+          <span class="marquee-light"></span>
+          <span class="marquee-light"></span>
+          <span class="marquee-light"></span>
+          <p>Birthday Quest</p>
+          <span class="marquee-light"></span>
+          <span class="marquee-light"></span>
+          <span class="marquee-light"></span>
+        </div>
+
+        <div class="screen-wrap">
+          <div class="status-bar" aria-label="Birthday status">
+            <div>
+              <span>HP</span>
+              <strong id="heart-count">00</strong><span>/25</span>
+            </div>
+            <div>
+              <span>Mode</span>
+              <strong id="birthday-mode">Loading</strong>
+            </div>
+            <button class="icon-button" id="sound-toggle" type="button" aria-label="Toggle sound">
+              <span aria-hidden="true">♪</span>
+            </button>
+          </div>
+
+          <div class="screen">
+            <div class="scanlines" aria-hidden="true"></div>
+            <section class="hero-panel">
+              <p class="eyebrow">July 5, 2026</p>
+              <h1 id="site-title">Happy 25th Birthday, Player 2</h1>
+              <p class="type-line" id="type-line">
+                Loading a soft little world for the girl I love...
+              </p>
+              <div class="countdown" aria-label="Countdown to birthday">
+                <div><strong id="days">00</strong><span>Days</span></div>
+                <div><strong id="hours">00</strong><span>Hours</span></div>
+                <div><strong id="minutes">00</strong><span>Min</span></div>
+                <div><strong id="seconds">00</strong><span>Sec</span></div>
+              </div>
+            </section>
+
+            <section class="quest-grid" aria-label="Birthday activities">
+              <article class="game-card">
+                <div class="card-heading">
+                  <span class="mini-icon heart-icon" aria-hidden="true"></span>
+                  <h2>Heart Catch</h2>
+                </div>
+                <p>Catch 25 hearts to unlock the final birthday message.</p>
+                <div class="game-stage" id="game-stage" tabindex="0" aria-label="Heart catch game">
+                  <div class="player" id="player" aria-hidden="true"></div>
+                  <div class="heart" id="falling-heart" aria-hidden="true"></div>
+                </div>
+                <div class="controls">
+                  <button type="button" data-move="-1" aria-label="Move left">◀</button>
+                  <button type="button" id="start-game">Start</button>
+                  <button type="button" data-move="1" aria-label="Move right">▶</button>
+                </div>
+              </article>
+
+              <article class="mail-card">
+                <div class="card-heading">
+                  <span class="mini-icon letter-icon" aria-hidden="true"></span>
+                  <h2>Love Mailbox</h2>
+                </div>
+                <div class="letters" id="letters" aria-label="Open love letters"></div>
+              </article>
+            </section>
+
+            <section class="memory-lane" aria-label="Birthday wishes">
+              <div class="pixel-avatar" aria-hidden="true">
+                <span class="bow"></span>
+                <span class="face"></span>
+              </div>
+              <div>
+                <p class="eyebrow">Achievement unlocked</p>
+                <h2>Level 25 looks cute on you</h2>
+                <p>
+                  Today is for your laugh, your softness, your stubborn little
+                  spark, and every tiny thing that makes loving you feel like my
+                  favorite side quest.
+                </p>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="control-deck">
+          <button type="button" id="secret-button">Unlock Final Letter</button>
+          <div class="joystick" aria-hidden="true"><span></span></div>
+          <button type="button" id="confetti-button">Confetti</button>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="letter-dialog" id="letter-dialog">
+      <form method="dialog">
+        <button class="close-button" aria-label="Close letter">×</button>
+      </form>
+      <p class="eyebrow" id="dialog-kicker">Love letter</p>
+      <h2 id="dialog-title">Title</h2>
+      <p id="dialog-body">Letter body</p>
+    </dialog>
+
+    <canvas id="confetti" aria-hidden="true"></canvas>
+    <script src="script.js"></script>
+  </body>
+</html>
