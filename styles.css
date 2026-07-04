@@ -311,6 +311,7 @@ main {
   position: relative;
   width: min(1180px, 100%);
   margin: 0 auto;
+  padding-top: 42px;
 }
 
 .room-viewport {
@@ -376,9 +377,9 @@ main {
 
 .wall-sign {
   position: absolute;
-  left: 1090px;
-  top: 24px;
-  z-index: 2;
+  left: 50%;
+  top: 0;
+  z-index: 9;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -781,14 +782,18 @@ main {
   animation: clawDrop 760ms steps(8, end) forwards;
 }
 
-.claw-plush {
+.claw-item {
   position: absolute;
-  left: calc(var(--plush-x, 62) * 1%);
+  left: calc(var(--item-x, 62) * 1%);
   bottom: 76px;
   z-index: 3;
   width: 72px;
   height: 62px;
   transform: translateX(-50%);
+  image-rendering: pixelated;
+}
+
+.target-stitch {
   background:
     linear-gradient(#6bc6ff, #6bc6ff) 7% 8% / 28% 43% no-repeat,
     linear-gradient(#6bc6ff, #6bc6ff) 65% 8% / 28% 43% no-repeat,
@@ -796,11 +801,55 @@ main {
     linear-gradient(var(--ink), var(--ink)) 40% 44% / 7% 8% no-repeat,
     linear-gradient(var(--ink), var(--ink)) 56% 44% / 7% 8% no-repeat,
     linear-gradient(#bdefff, #bdefff) 42% 58% / 18% 10% no-repeat;
-  image-rendering: pixelated;
 }
 
-.claw-plush.is-caught {
+.decoy-star {
+  background:
+    linear-gradient(var(--lemon), var(--lemon)) 42% 0 / 18% 22% no-repeat,
+    linear-gradient(var(--lemon), var(--lemon)) 18% 24% / 64% 18% no-repeat,
+    linear-gradient(var(--lemon), var(--lemon)) 30% 42% / 40% 20% no-repeat,
+    linear-gradient(var(--lemon), var(--lemon)) 22% 62% / 20% 24% no-repeat,
+    linear-gradient(var(--lemon), var(--lemon)) 58% 62% / 20% 24% no-repeat;
+}
+
+.decoy-candy {
+  background:
+    linear-gradient(var(--hot), var(--hot)) 28% 26% / 46% 46% no-repeat,
+    linear-gradient(#fff8fc, #fff8fc) 38% 30% / 12% 38% no-repeat,
+    linear-gradient(#fff8fc, #fff8fc) 56% 30% / 12% 38% no-repeat,
+    linear-gradient(var(--mint), var(--mint)) 8% 38% / 20% 20% no-repeat,
+    linear-gradient(var(--mint), var(--mint)) 74% 38% / 20% 20% no-repeat;
+}
+
+.decoy-bow {
+  background:
+    linear-gradient(var(--pink), var(--pink)) 4% 20% / 38% 54% no-repeat,
+    linear-gradient(var(--pink), var(--pink)) 58% 20% / 38% 54% no-repeat,
+    linear-gradient(var(--lemon), var(--lemon)) 42% 34% / 16% 26% no-repeat;
+}
+
+.claw-item.is-grabbed {
+  animation: itemShake 180ms steps(2, end) infinite;
+}
+
+.claw-item.is-caught {
   animation: plushCaught 900ms steps(8, end) forwards;
+}
+
+.hold-meter {
+  height: 24px;
+  margin-top: 12px;
+  border: 4px solid var(--ink);
+  background: #fff8fc;
+  box-shadow: inset 0 0 0 4px rgba(50, 19, 39, 0.12);
+}
+
+.hold-meter span {
+  display: block;
+  width: var(--hold-power, 0%);
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--hot) 0 18px, var(--lemon) 18px 36px);
+  transition: width 80ms steps(3, end);
 }
 
 .prize-chute {
@@ -1096,14 +1145,34 @@ main {
   }
 }
 
+@keyframes itemShake {
+  50% {
+    transform: translateX(calc(-50% + 6px)) rotate(3deg);
+  }
+}
+
 @media (max-width: 860px) {
+  .arcade-room {
+    padding: 12px;
+  }
+
   .room-header,
   .status-bar {
     grid-template-columns: 1fr;
   }
 
+  .room-header h1 {
+    font-size: clamp(1.05rem, 8vw, 2.05rem);
+    text-shadow: 2px 2px 0 #fff, 4px 4px 0 var(--mint);
+  }
+
+  .room-stage {
+    padding-top: 50px;
+  }
+
   .status-bar {
     display: grid;
+    width: 100%;
   }
 
   .room-floor {
@@ -1112,8 +1181,15 @@ main {
   }
 
   .wall-sign {
-    width: calc(100% - 28px);
+    width: min(420px, calc(100% - 68px));
     justify-content: center;
+    gap: 9px;
+    padding: 9px 10px;
+  }
+
+  .wall-sign p,
+  .wall-sign span {
+    font-size: clamp(0.56rem, 2.8vw, 0.82rem);
   }
 
   .station {
@@ -1188,6 +1264,23 @@ main {
   .room-floor {
     height: 680px;
     min-height: 0;
+  }
+
+  .room-nav {
+    width: 48px;
+    height: 58px;
+  }
+
+  .room-nav-left {
+    left: -8px;
+  }
+
+  .room-nav-right {
+    right: -8px;
+  }
+
+  .room-viewport {
+    border-width: 5px;
   }
 
   .station {

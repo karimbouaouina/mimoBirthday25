@@ -32,9 +32,11 @@ let heartX = 40;
 let heartY = -10;
 let gameRunning = false;
 let clawX = 50;
-let plushX = 62;
+let clawItems = [];
+let caughtClawItem;
 let clawBusy = false;
 let clawDrift = 0;
+let holdPower = 0;
 let whackScore = 0;
 let whackTime = 25;
 let whackActive = false;
@@ -42,6 +44,7 @@ let whackTimer;
 let whackSpawnTimer;
 let activePhotoStream;
 let clawWiggleTimer;
+let holdDecayTimer;
 let lastFrame = 0;
 let audioContext;
 let muted = true;
@@ -360,19 +363,26 @@ function redeemCoupon(index) {
 }
 
 function plushView() {
+  clawItems = buildClawItems();
   openDialog(
     "Claw machine",
     rewards.has("plush") ? "Stitch Plushie Won" : "Win the Stitch Plushie",
-    `<p>Line up the claw over the plushie, then drop it. The machine wobbles, so you need a clean center hit.</p>
+    `<p>Grab the Stitch plushie, then mash Hold before the claw shakes it loose. Other prizes do not unlock the reward.</p>
     <div class="claw-game" id="claw-game" tabindex="0">
       <div class="claw-rail" aria-hidden="true"></div>
       <div class="claw" id="claw" aria-hidden="true">
         <span></span>
       </div>
-      <div class="claw-plush" id="claw-plush" aria-hidden="true"></div>
+      ${clawItems
+        .map(
+          (item) =>
+            `<div class="claw-item ${item.kind}" id="${item.id}" style="--item-x: ${item.x}" aria-hidden="true"></div>`
+        )
+        .join("")}
       <div class="prize-chute" aria-hidden="true">Prize</div>
     </div>
-    <p class="game-hint" id="claw-hint">${rewards.has("plush") ? "Already claimed, but you can still play again." : "Use Left / Right, then Drop."}</p>
+    <div class="hold-meter" aria-label="Claw hold meter"><span id="hold-meter"></span></div>
+    <p class="game-hint" id="claw-hint">${rewards.has("plush") ? "Already claimed, but you can still play again." : "Use Left / Right, Drop, then mash Hold if it grabs."}</p>
     <div class="dialog-actions">
       <button type="button" data-claw-move="-1">Left</button>
       <button type="button" id="claw-drop">Drop</button>
@@ -380,8 +390,9 @@ function plushView() {
     </div>`
   );
   clawX = 50;
-  plushX = 14 + Math.random() * 72;
   clawDrift = 0;
+  holdPower = 0;
+  caughtClawItem = undefined;
   clawBusy = false;
   setClawPositions();
   startClawWiggle();
@@ -391,9 +402,26 @@ function plushView() {
   $("#claw-drop").addEventListener("click", dropClaw);
 }
 
+function buildClawItems() {
+  const stitchX = 18 + Math.random() * 64;
+  const rawItems = [
+    { id: "claw-stitch", kind: "target-stitch", x: stitchX, label: "Stitch" },
+    { id: "claw-star", kind: "decoy-star", x: 16 + Math.random() * 18, label: "Star" },
+    { id: "claw-candy", kind: "decoy-candy", x: 42 + Math.random() * 18, label: "Candy" },
+    { id: "claw-bow", kind: "decoy-bow", x: 68 + Math.random() * 16, label: "Bow" }
+  ];
+  return rawItems.map((item, index, items) => {
+    let x = item.x;
+    while (items.some((other, otherIndex) => otherIndex < index && Math.abs(other.x - x) < 10)) {
+      x = 12 + Math.random() * 76;
+    }
+    item.x = Math.round(x);
+    return item;
+  });
+}
+
 function setClawPositions() {
   $("#claw")?.style.setProperty("--claw-x", clawX);
-  $("#claw-plush")?.style.setProperty("--plush-x", plushX);
 }
 
 function moveClaw(direction) {
@@ -406,14 +434,17 @@ function moveClaw(direction) {
 function dropClaw() {
   if (clawBusy || !$("#claw-game")) return;
   const claw = $("#claw");
-  const plush = $("#claw-plush");
   const hint = $("#claw-hint");
   const dropButton = $("#claw-drop");
   const landedX = clawX + clawDrift + (Math.random() * 4 - 2);
-  const won = Math.abs(landedX - plushX) <= 4;
+  const nearest = clawItems
+    .map((item) => ({ ...item, distance: Math.abs(item.x - landedX) }))
+    .sort((a, b) => a.distance - b.distance)[0];
+  const grabbed = nearest && nearest.distance <= 5 && Math.random() > 0.35;
 
   clawBusy = true;
   stopClawWiggle();
+  stopHoldDecay();
   dropButton.disabled = true;
   hint.textContent = "Claw descending... steady...";
   claw?.classList.add("is-dropping");
@@ -421,34 +452,97 @@ function dropClaw() {
   playTone(320, 0.12);
 
   window.setTimeout(() => {
-    if (won) {
-      plush?.classList.add("is-caught");
-      hint.textContent = "Got it! Stitch plushie unlocked.";
-      addReward("plush");
-      burstConfetti();
-      playWinJingle();
-      window.setTimeout(() => {
-        openDialog(
-          "Claw machine",
-          "Stitch Plushie Won",
-          `<div class="plush-prize" aria-hidden="true"></div>
-          <p>You won the softest imaginary Stitch plushie. Redeemable for one real plushie hunt together.</p>`
-        );
-      }, 900);
+    if (grabbed) {
+      caughtClawItem = nearest;
+      $(`#${nearest.id}`)?.classList.add("is-grabbed");
+      holdPower = nearest.kind === "target-stitch" ? 34 : 52;
+      updateHoldMeter();
+      dropButton.disabled = false;
+      dropButton.textContent = "Hold!";
+      dropButton.removeEventListener("click", dropClaw);
+      dropButton.addEventListener("click", mashClawHold);
+      hint.textContent =
+        nearest.kind === "target-stitch"
+          ? "It grabbed Stitch. Mash Hold before it drops."
+          : `It grabbed the ${nearest.label}. Mash Hold to see what happens.`;
+      startHoldDecay();
       return;
     }
 
-    hint.textContent = "So close. Reposition the claw and try again.";
-    claw?.classList.remove("is-dropping");
-    claw?.style.setProperty("--drop-drift", "0%");
-    plushX = 14 + Math.random() * 72;
-    clawDrift = 0;
-    clawBusy = false;
-    dropButton.disabled = false;
-    setClawPositions();
-    startClawWiggle();
-    playTone(180, 0.12);
+    resetClawAttempt("The claw slipped. Try lining it up again.");
   }, 760);
+}
+
+function mashClawHold() {
+  if (!caughtClawItem || !$("#claw-game")) return;
+  holdPower = Math.min(100, holdPower + (caughtClawItem.kind === "target-stitch" ? 8 : 5));
+  updateHoldMeter();
+  playTone(720 + holdPower, 0.035);
+  if (holdPower < 100) return;
+
+  stopHoldDecay();
+  if (caughtClawItem.kind !== "target-stitch") {
+    resetClawAttempt(`You held the ${caughtClawItem.label}, but it is not Stitch. Try for the blue plushie.`);
+    return;
+  }
+
+  $(`#${caughtClawItem.id}`)?.classList.add("is-caught");
+  $("#claw-hint").textContent = "Held it all the way. Stitch plushie unlocked.";
+  addReward("plush");
+  burstConfetti();
+  playWinJingle();
+  window.setTimeout(() => {
+    openDialog(
+      "Claw machine",
+      "Stitch Plushie Won",
+      `<div class="plush-prize" aria-hidden="true"></div>
+      <p>You won the softest imaginary Stitch plushie. Redeemable for one real plushie hunt together.</p>`
+    );
+  }, 900);
+}
+
+function startHoldDecay() {
+  stopHoldDecay();
+  holdDecayTimer = window.setInterval(() => {
+    if (!caughtClawItem || !$("#claw-game")) return;
+    holdPower -= caughtClawItem.kind === "target-stitch" ? 7 : 9;
+    updateHoldMeter();
+    if (holdPower <= 0) {
+      resetClawAttempt("It shook loose and dropped. Try again.");
+    }
+  }, 260);
+}
+
+function stopHoldDecay() {
+  window.clearInterval(holdDecayTimer);
+}
+
+function updateHoldMeter() {
+  $("#hold-meter")?.style.setProperty("--hold-power", `${Math.max(0, holdPower)}%`);
+}
+
+function resetClawAttempt(message) {
+  const claw = $("#claw");
+  const dropButton = $("#claw-drop");
+  stopHoldDecay();
+  claw?.classList.remove("is-dropping");
+  claw?.style.setProperty("--drop-drift", "0%");
+  document.querySelectorAll(".claw-item").forEach((item) => item.classList.remove("is-grabbed", "is-caught"));
+  caughtClawItem = undefined;
+  clawDrift = 0;
+  holdPower = 0;
+  updateHoldMeter();
+  clawBusy = false;
+  if (dropButton) {
+    dropButton.disabled = false;
+    dropButton.textContent = "Drop";
+    dropButton.removeEventListener("click", mashClawHold);
+    dropButton.removeEventListener("click", dropClaw);
+    dropButton.addEventListener("click", dropClaw);
+  }
+  $("#claw-hint").textContent = message;
+  startClawWiggle();
+  playTone(180, 0.12);
 }
 
 function startClawWiggle() {
@@ -756,6 +850,7 @@ dialog.addEventListener("close", () => {
   gameRunning = false;
   clawBusy = false;
   stopClawWiggle();
+  stopHoldDecay();
   stopWhackGame();
   stopCamera();
 });
