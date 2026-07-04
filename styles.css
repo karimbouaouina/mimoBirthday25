@@ -222,13 +222,38 @@ main {
   min-height: 96px;
   padding: 18px;
   border-top: 7px solid var(--ink);
-  background: #ff91d2;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 22px),
+    #ff91d2;
 }
 
 .slot-base p {
   margin: 0;
+  justify-self: center;
+  min-width: min(230px, 100%);
+  padding: 10px 12px;
+  border: 4px solid var(--ink);
+  background: rgba(255, 248, 252, 0.94);
+  box-shadow: 5px 5px 0 var(--shadow);
   text-align: center;
-  font-size: 1.45rem;
+  font-size: 1.25rem;
+  line-height: 1.05;
+}
+
+.slot-base p span,
+.slot-base p strong {
+  display: block;
+}
+
+.slot-base p span {
+  color: var(--violet);
+}
+
+.slot-base p strong {
+  margin-top: 4px;
+  color: var(--hot);
+  font-family: "Press Start 2P", "Courier New", monospace;
+  font-size: 0.7rem;
 }
 
 .coin-slot {
@@ -338,11 +363,11 @@ main {
 }
 
 .room-nav-left {
-  left: -28px;
+  left: -72px;
 }
 
 .room-nav-right {
-  right: -28px;
+  right: -72px;
 }
 
 .room-nav:active {
@@ -445,98 +470,116 @@ main {
 }
 
 .cabinet-art {
+  position: relative;
   display: block;
   height: 82px;
   border: 4px solid var(--ink);
-  background: var(--rose);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)),
+    repeating-linear-gradient(90deg, #ffd3ef 0 16px, #fff0aa 16px 32px);
   image-rendering: pixelated;
+  overflow: hidden;
+}
+
+.cabinet-art::before {
+  content: attr(data-mark);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: "Press Start 2P", "Courier New", monospace;
+  font-size: 2.1rem;
+  line-height: 1;
+  color: var(--hot);
+  text-shadow: 3px 3px 0 #fff, 5px 5px 0 var(--blue);
+}
+
+.cabinet-art::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 8px;
+  height: 5px;
+  background: var(--ink);
+  box-shadow: 0 -48px 0 rgba(255, 255, 255, 0.44);
 }
 
 .heart-art {
   background:
-    linear-gradient(#fff8fc, #fff8fc) 14% 16% / 72% 58% no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 44% 20% / 16px 16px no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 56% 20% / 16px 16px no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 37% 36% / 54px 16px no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 43% 52% / 38px 16px no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 49% 68% / 18px 12px no-repeat,
-    linear-gradient(var(--blue), var(--blue)) 16% 78% / 68% 8px no-repeat,
-    #ffd3ef;
+    radial-gradient(circle at 26% 34%, rgba(255, 47, 147, 0.22) 0 14px, transparent 15px),
+    radial-gradient(circle at 74% 34%, rgba(255, 47, 147, 0.22) 0 14px, transparent 15px),
+    #ffe4f5;
 }
 
 .letter-art {
   background:
-    linear-gradient(var(--ink), var(--ink)) 17% 17% / 66% 6px no-repeat,
-    linear-gradient(35deg, transparent 47%, var(--ink) 48% 53%, transparent 54%),
-    linear-gradient(-35deg, transparent 47%, var(--ink) 48% 53%, transparent 54%),
-    linear-gradient(var(--hot), var(--hot)) 44% 56% / 12% 12% no-repeat,
+    linear-gradient(32deg, transparent 46%, rgba(50, 19, 39, 0.28) 47% 52%, transparent 53%),
+    linear-gradient(-32deg, transparent 46%, rgba(50, 19, 39, 0.28) 47% 52%, transparent 53%),
     #fff0aa;
 }
 
 .coupon-art {
   background:
-    linear-gradient(var(--ink), var(--ink)) 16% 22% / 68% 8px no-repeat,
-    linear-gradient(var(--violet), var(--violet)) center / 76% 20px no-repeat,
-    radial-gradient(circle at 28% 50%, var(--hot) 0 8px, transparent 9px),
-    radial-gradient(circle at 72% 50%, var(--hot) 0 8px, transparent 9px),
+    radial-gradient(circle at 18% 50%, #fff8fc 0 9px, transparent 10px),
+    radial-gradient(circle at 82% 50%, #fff8fc 0 9px, transparent 10px),
     repeating-linear-gradient(90deg, #fff0aa 0 18px, #ffcfec 18px 36px);
 }
 
 .stitch-art {
   background:
-    linear-gradient(#6bc6ff, #6bc6ff) 13% 16% / 24% 36% no-repeat,
-    linear-gradient(#6bc6ff, #6bc6ff) 63% 16% / 24% 36% no-repeat,
-    linear-gradient(#6bc6ff, #6bc6ff) 30% 32% / 42% 42% no-repeat,
-    linear-gradient(var(--ink), var(--ink)) 40% 48% / 7% 8% no-repeat,
-    linear-gradient(var(--ink), var(--ink)) 58% 48% / 7% 8% no-repeat,
-    linear-gradient(#bdefff, #bdefff) 45% 60% / 13% 8% no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 49% 70% / 5% 5% no-repeat,
+    radial-gradient(circle at 28% 36%, #6bc6ff 0 18px, transparent 19px),
+    radial-gradient(circle at 72% 36%, #6bc6ff 0 18px, transparent 19px),
+    radial-gradient(circle at 50% 50%, #6bc6ff 0 30px, transparent 31px),
     #eaf8ff;
+}
+
+.stitch-art::before {
+  color: #1689e8;
+  text-shadow: 3px 3px 0 #fff, 5px 5px 0 #bdefff;
 }
 
 .memory-art {
   background:
-    linear-gradient(var(--ink), var(--ink)) 14% 72% / 72% 5px no-repeat,
-    linear-gradient(var(--ink), var(--ink)) 18% 19% / 5px 58% no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 20% 24% / 18px 18px no-repeat,
-    linear-gradient(var(--mint), var(--mint)) 48% 18% / 18px 18px no-repeat,
-    linear-gradient(var(--lemon), var(--lemon)) 68% 36% / 18px 18px no-repeat,
-    linear-gradient(var(--violet), var(--violet)) 38% 56% / 18px 18px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 18% 72% / 64% 5px no-repeat,
+    radial-gradient(circle at 26% 34%, var(--hot) 0 9px, transparent 10px),
+    radial-gradient(circle at 50% 28%, var(--mint) 0 9px, transparent 10px),
+    radial-gradient(circle at 72% 44%, var(--lemon) 0 9px, transparent 10px),
+    radial-gradient(circle at 44% 56%, var(--violet) 0 9px, transparent 10px),
     #fff8fc;
 }
 
 .whack-art {
   background:
-    linear-gradient(var(--ink), var(--ink)) 12% 78% / 76% 6px no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 18% 18% / 18px 18px no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 48% 46% / 18px 18px no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 70% 22% / 18px 18px no-repeat,
-    radial-gradient(circle at 24% 28%, #321327 0 13px, transparent 14px),
-    radial-gradient(circle at 54% 56%, #321327 0 13px, transparent 14px),
-    radial-gradient(circle at 76% 32%, #321327 0 13px, transparent 14px),
+    radial-gradient(circle at 22% 38%, #321327 0 13px, transparent 14px),
+    radial-gradient(circle at 52% 58%, #321327 0 13px, transparent 14px),
+    radial-gradient(circle at 78% 34%, #321327 0 13px, transparent 14px),
     #fff0aa;
+}
+
+.whack-art::before {
+  font-size: 1.8rem;
 }
 
 .photo-art {
   background:
-    linear-gradient(var(--ink), var(--ink)) 18% 18% / 64% 9% no-repeat,
-    linear-gradient(var(--blue), var(--blue)) 26% 34% / 48% 36% no-repeat,
-    linear-gradient(var(--lemon), var(--lemon)) 30% 40% / 12% 12% no-repeat,
-    linear-gradient(var(--mint), var(--mint)) 58% 40% / 12% 12% no-repeat,
-    linear-gradient(var(--hot), var(--hot)) 42% 74% / 16% 10% no-repeat,
-    linear-gradient(#fff8fc, #fff8fc) 34% 42% / 32% 20% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 16% 18% / 68% 7px no-repeat,
+    linear-gradient(var(--blue), var(--blue)) 26% 34% / 48% 32% no-repeat,
+    linear-gradient(#fff8fc, #fff8fc) 34% 42% / 32% 15% no-repeat,
     #ffd3ef;
 }
 
 .trophy-art {
   background:
-    radial-gradient(circle at 50% 26%, rgba(255, 255, 255, 0.9) 0 10px, transparent 11px),
-    linear-gradient(var(--lemon), var(--lemon)) 34% 20% / 34% 34% no-repeat,
-    linear-gradient(var(--lemon), var(--lemon)) 27% 28% / 12% 18% no-repeat,
-    linear-gradient(var(--lemon), var(--lemon)) 61% 28% / 12% 18% no-repeat,
-    linear-gradient(var(--ink), var(--ink)) 46% 54% / 10% 18% no-repeat,
-    linear-gradient(var(--ink), var(--ink)) 34% 72% / 34% 8% no-repeat,
+    radial-gradient(circle at 50% 30%, rgba(255, 240, 122, 0.92) 0 24px, transparent 25px),
+    linear-gradient(var(--ink), var(--ink)) 44% 64% / 12% 16% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 34% 78% / 32% 6px no-repeat,
     #fff8fc;
+}
+
+.trophy-art::before {
+  color: var(--lemon);
+  text-shadow: 3px 3px 0 var(--ink), 5px 5px 0 var(--hot);
 }
 
 .station-heart {
@@ -1337,6 +1380,11 @@ main {
     padding: 12px;
   }
 
+  .slot-base p {
+    min-width: 0;
+    width: 100%;
+  }
+
   .lever,
   .coin-slot {
     justify-self: center;
@@ -1353,11 +1401,15 @@ main {
   }
 
   .room-nav-left {
-    left: -8px;
+    left: -2px;
   }
 
   .room-nav-right {
-    right: -8px;
+    right: -2px;
+  }
+
+  .room-nav {
+    opacity: 0.9;
   }
 
   .room-viewport {
@@ -1367,7 +1419,7 @@ main {
   .station {
     left: auto !important;
     right: auto !important;
-    width: 150px;
+    width: 160px;
     min-height: 174px;
     transform: none;
   }
