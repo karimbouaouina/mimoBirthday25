@@ -47,7 +47,10 @@ let clawWiggleTimer;
 let holdDecayTimer;
 let lastFrame = 0;
 let audioContext;
-let muted = true;
+let muted = false;
+let musicStarted = false;
+let musicTimer;
+let musicStep = 0;
 let confettiPieces = [];
 
 const letters = [
@@ -100,17 +103,52 @@ function playTone(frequency, duration = 0.08) {
   oscillator.stop(audioContext.currentTime + duration);
 }
 
+function playMusicTone(frequency, duration = 0.16) {
+  if (muted || !audioContext) return;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = "triangle";
+  oscillator.frequency.value = frequency;
+  gain.gain.setValueAtTime(0.018, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + duration);
+}
+
+async function startMusic() {
+  if (musicStarted || muted) return;
+  ensureAudio();
+  if (audioContext.state === "suspended") await audioContext.resume();
+  musicStarted = true;
+  const melody = [523, 659, 784, 659, 698, 880, 784, 659, 523, 659, 784, 1046];
+  musicTimer = window.setInterval(() => {
+    playMusicTone(melody[musicStep % melody.length], musicStep % 4 === 0 ? 0.22 : 0.14);
+    musicStep += 1;
+  }, 260);
+}
+
+function stopMusic() {
+  window.clearInterval(musicTimer);
+  musicStarted = false;
+}
+
 function toggleSound() {
   muted = !muted;
   $("#sound-toggle").setAttribute("aria-label", muted ? "Turn sound on" : "Turn sound off");
   if (!muted) {
+    startMusic();
     playTone(523);
     window.setTimeout(() => playTone(659), 90);
     window.setTimeout(() => playTone(784), 180);
+  } else {
+    stopMusic();
   }
 }
 
 function spinSlot() {
+  startMusic();
   spinCount += 1;
   spinButton.disabled = true;
   slotMessage.textContent = spinCount < 3 ? "Almost... the birthday magic is warming up." : "Jackpot loading...";
@@ -829,6 +867,9 @@ function drawConfetti() {
 
 spinButton.addEventListener("click", spinSlot);
 $("#sound-toggle").addEventListener("click", toggleSound);
+["pointerdown", "keydown", "touchstart"].forEach((eventName) => {
+  document.addEventListener(eventName, startMusic, { once: true, passive: true });
+});
 document.querySelectorAll("[data-station]").forEach((button) => {
   button.addEventListener("click", () => {
     moveToStation(button);
@@ -856,4 +897,5 @@ dialog.addEventListener("close", () => {
 });
 window.addEventListener("resize", resizeConfetti);
 window.addEventListener("resize", () => updateRoomPosition(roomX, false));
+$("#sound-toggle").setAttribute("aria-label", "Turn sound off");
 resizeConfetti();

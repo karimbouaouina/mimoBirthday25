@@ -454,39 +454,50 @@ main {
 
 .heart-art {
   background:
+    linear-gradient(#fff8fc, #fff8fc) 14% 16% / 72% 58% no-repeat,
     linear-gradient(var(--hot), var(--hot)) 44% 20% / 16px 16px no-repeat,
     linear-gradient(var(--hot), var(--hot)) 56% 20% / 16px 16px no-repeat,
     linear-gradient(var(--hot), var(--hot)) 37% 36% / 54px 16px no-repeat,
     linear-gradient(var(--hot), var(--hot)) 43% 52% / 38px 16px no-repeat,
     linear-gradient(var(--hot), var(--hot)) 49% 68% / 18px 12px no-repeat,
+    linear-gradient(var(--blue), var(--blue)) 16% 78% / 68% 8px no-repeat,
     #ffd3ef;
 }
 
 .letter-art {
   background:
+    linear-gradient(var(--ink), var(--ink)) 17% 17% / 66% 6px no-repeat,
     linear-gradient(35deg, transparent 47%, var(--ink) 48% 53%, transparent 54%),
     linear-gradient(-35deg, transparent 47%, var(--ink) 48% 53%, transparent 54%),
+    linear-gradient(var(--hot), var(--hot)) 44% 56% / 12% 12% no-repeat,
     #fff0aa;
 }
 
 .coupon-art {
   background:
+    linear-gradient(var(--ink), var(--ink)) 16% 22% / 68% 8px no-repeat,
     linear-gradient(var(--violet), var(--violet)) center / 76% 20px no-repeat,
+    radial-gradient(circle at 28% 50%, var(--hot) 0 8px, transparent 9px),
+    radial-gradient(circle at 72% 50%, var(--hot) 0 8px, transparent 9px),
     repeating-linear-gradient(90deg, #fff0aa 0 18px, #ffcfec 18px 36px);
 }
 
 .stitch-art {
   background:
-    linear-gradient(#6bc6ff, #6bc6ff) 18% 18% / 22% 34% no-repeat,
-    linear-gradient(#6bc6ff, #6bc6ff) 60% 18% / 22% 34% no-repeat,
+    linear-gradient(#6bc6ff, #6bc6ff) 13% 16% / 24% 36% no-repeat,
+    linear-gradient(#6bc6ff, #6bc6ff) 63% 16% / 24% 36% no-repeat,
     linear-gradient(#6bc6ff, #6bc6ff) 30% 32% / 42% 42% no-repeat,
     linear-gradient(var(--ink), var(--ink)) 40% 48% / 7% 8% no-repeat,
     linear-gradient(var(--ink), var(--ink)) 58% 48% / 7% 8% no-repeat,
+    linear-gradient(#bdefff, #bdefff) 45% 60% / 13% 8% no-repeat,
+    linear-gradient(var(--hot), var(--hot)) 49% 70% / 5% 5% no-repeat,
     #eaf8ff;
 }
 
 .memory-art {
   background:
+    linear-gradient(var(--ink), var(--ink)) 14% 72% / 72% 5px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 18% 19% / 5px 58% no-repeat,
     linear-gradient(var(--hot), var(--hot)) 20% 24% / 18px 18px no-repeat,
     linear-gradient(var(--mint), var(--mint)) 48% 18% / 18px 18px no-repeat,
     linear-gradient(var(--lemon), var(--lemon)) 68% 36% / 18px 18px no-repeat,
@@ -496,6 +507,7 @@ main {
 
 .whack-art {
   background:
+    linear-gradient(var(--ink), var(--ink)) 12% 78% / 76% 6px no-repeat,
     linear-gradient(var(--hot), var(--hot)) 18% 18% / 18px 18px no-repeat,
     linear-gradient(var(--hot), var(--hot)) 48% 46% / 18px 18px no-repeat,
     linear-gradient(var(--hot), var(--hot)) 70% 22% / 18px 18px no-repeat,
@@ -509,6 +521,8 @@ main {
   background:
     linear-gradient(var(--ink), var(--ink)) 18% 18% / 64% 9% no-repeat,
     linear-gradient(var(--blue), var(--blue)) 26% 34% / 48% 36% no-repeat,
+    linear-gradient(var(--lemon), var(--lemon)) 30% 40% / 12% 12% no-repeat,
+    linear-gradient(var(--mint), var(--mint)) 58% 40% / 12% 12% no-repeat,
     linear-gradient(var(--hot), var(--hot)) 42% 74% / 16% 10% no-repeat,
     linear-gradient(#fff8fc, #fff8fc) 34% 42% / 32% 20% no-repeat,
     #ffd3ef;
@@ -516,6 +530,7 @@ main {
 
 .trophy-art {
   background:
+    radial-gradient(circle at 50% 26%, rgba(255, 255, 255, 0.9) 0 10px, transparent 11px),
     linear-gradient(var(--lemon), var(--lemon)) 34% 20% / 34% 34% no-repeat,
     linear-gradient(var(--lemon), var(--lemon)) 27% 28% / 12% 18% no-repeat,
     linear-gradient(var(--lemon), var(--lemon)) 61% 28% / 12% 18% no-repeat,
@@ -1153,16 +1168,17 @@ main {
 
 @media (max-width: 860px) {
   .arcade-room {
-    padding: 12px;
+    padding: 10px;
   }
 
-  .room-header,
-  .status-bar {
+  .room-header {
     grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
   }
 
   .room-header h1 {
-    font-size: clamp(1.05rem, 8vw, 2.05rem);
+    font-size: clamp(1.05rem, 7vw, 1.85rem);
     text-shadow: 2px 2px 0 #fff, 4px 4px 0 var(--mint);
   }
 
@@ -1172,11 +1188,25 @@ main {
 
   .status-bar {
     display: grid;
+    grid-template-columns: 1fr 1fr 44px;
+    align-items: center;
     width: 100%;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .status-bar div {
+    display: grid;
+    gap: 2px;
+    font-size: 1.05rem;
+  }
+
+  .status-bar .icon-button {
+    justify-self: end;
   }
 
   .room-floor {
-    height: 680px;
+    height: 560px;
     min-height: 0;
   }
 
@@ -1193,67 +1223,118 @@ main {
   }
 
   .station {
-    width: min(43vw, 170px);
+    width: 150px;
+    min-height: 174px;
   }
 
   .station-heart {
     left: 120px;
-    top: 218px;
+    top: 166px;
   }
 
   .station-mail {
     right: auto;
     left: 390px;
-    top: 145px;
+    top: 118px;
   }
 
   .station-coupon {
     left: 690px;
     right: auto;
-    top: 226px;
+    top: 174px;
   }
 
   .station-plush {
     right: auto;
     left: 980px;
-    top: 145px;
+    top: 118px;
   }
 
   .station-whack {
     left: 1260px;
-    top: 246px;
+    top: 190px;
   }
 
   .station-photo {
     right: auto;
     left: 1530px;
-    top: 150px;
+    top: 120px;
     bottom: auto;
   }
 
   .station-memory {
     left: 1700px;
-    top: 382px;
+    top: 314px;
     bottom: auto;
   }
 
   .station-final {
     right: auto;
     left: 1940px;
-    top: 236px;
+    top: 184px;
     bottom: auto;
   }
 
   .room-player {
-    bottom: 128px;
+    bottom: 92px;
   }
 }
 
 @media (max-width: 540px) {
   .slot-base,
-  .reels,
   .dialog-actions {
     grid-template-columns: 1fr;
+  }
+
+  .slot-gate {
+    padding: 14px;
+    align-items: start;
+  }
+
+  .slot-top {
+    grid-template-columns: 24px 1fr 24px;
+    padding: 12px;
+  }
+
+  .slot-light {
+    width: 18px;
+    height: 18px;
+  }
+
+  .slot-top h1 {
+    font-size: clamp(0.72rem, 5vw, 1rem);
+    text-shadow: 2px 2px 0 #fff, 4px 4px 0 var(--blue);
+  }
+
+  .slot-screen {
+    margin: 10px;
+    padding: 12px;
+    border-width: 5px;
+  }
+
+  .reels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .reel {
+    min-height: 78px;
+    border-width: 4px;
+    font-size: clamp(1rem, 8vw, 1.55rem);
+  }
+
+  .slot-message {
+    font-size: 1.18rem;
+  }
+
+  .big-button {
+    min-height: 48px;
+    font-size: 0.68rem;
+  }
+
+  .slot-base {
+    min-height: 80px;
+    padding: 12px;
   }
 
   .lever,
@@ -1262,7 +1343,7 @@ main {
   }
 
   .room-floor {
-    height: 680px;
+    height: 560px;
     min-height: 0;
   }
 
@@ -1286,7 +1367,8 @@ main {
   .station {
     left: auto !important;
     right: auto !important;
-    width: min(240px, calc(100% - 42px));
+    width: 150px;
+    min-height: 174px;
     transform: none;
   }
 
@@ -1297,44 +1379,44 @@ main {
 
   .station-heart {
     left: 120px !important;
-    top: 218px;
+    top: 166px;
   }
 
   .station-mail {
     left: 390px !important;
-    top: 145px;
+    top: 118px;
   }
 
   .station-coupon {
     left: 690px !important;
-    top: 226px;
+    top: 174px;
   }
 
   .station-plush {
     left: 980px !important;
-    top: 145px;
+    top: 118px;
   }
 
   .station-whack {
     left: 1260px !important;
-    top: 246px;
+    top: 190px;
   }
 
   .station-photo {
     left: 1530px !important;
-    top: 150px;
+    top: 120px;
     bottom: auto;
   }
 
   .station-memory {
     left: 1700px !important;
-    top: 382px;
+    top: 314px;
     bottom: auto;
   }
 
   .station-final {
     left: 1940px !important;
-    top: 236px;
+    top: 184px;
     bottom: auto;
   }
 
