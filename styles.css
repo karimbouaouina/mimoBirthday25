@@ -454,6 +454,26 @@ main {
     #fff8fc;
 }
 
+.whack-art {
+  background:
+    linear-gradient(var(--hot), var(--hot)) 18% 18% / 18px 18px no-repeat,
+    linear-gradient(var(--hot), var(--hot)) 48% 46% / 18px 18px no-repeat,
+    linear-gradient(var(--hot), var(--hot)) 70% 22% / 18px 18px no-repeat,
+    radial-gradient(circle at 24% 28%, #321327 0 13px, transparent 14px),
+    radial-gradient(circle at 54% 56%, #321327 0 13px, transparent 14px),
+    radial-gradient(circle at 76% 32%, #321327 0 13px, transparent 14px),
+    #fff0aa;
+}
+
+.photo-art {
+  background:
+    linear-gradient(var(--ink), var(--ink)) 18% 18% / 64% 9% no-repeat,
+    linear-gradient(var(--blue), var(--blue)) 26% 34% / 48% 36% no-repeat,
+    linear-gradient(var(--hot), var(--hot)) 42% 74% / 16% 10% no-repeat,
+    linear-gradient(#fff8fc, #fff8fc) 34% 42% / 32% 20% no-repeat,
+    #ffd3ef;
+}
+
 .trophy-art {
   background:
     linear-gradient(var(--lemon), var(--lemon)) 34% 20% / 34% 34% no-repeat,
@@ -482,6 +502,16 @@ main {
 .station-plush {
   right: 7%;
   top: 28%;
+}
+
+.station-whack {
+  left: 43%;
+  top: 42%;
+}
+
+.station-photo {
+  right: 38%;
+  bottom: 9%;
 }
 
 .station-memory {
@@ -611,8 +641,265 @@ main {
   image-rendering: pixelated;
 }
 
+.claw-game {
+  position: relative;
+  height: 300px;
+  margin-top: 16px;
+  overflow: hidden;
+  border: 5px solid var(--ink);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.28), transparent 40%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.34) 0 3px, transparent 3px 34px),
+    #dff8ff;
+}
+
+.claw-game::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 78px;
+  border-top: 4px solid var(--ink);
+  background: repeating-linear-gradient(90deg, #ffcfec 0 28px, #fff0aa 28px 56px);
+}
+
+.claw-rail {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  top: 28px;
+  height: 16px;
+  border: 4px solid var(--ink);
+  background: var(--violet);
+}
+
+.claw {
+  position: absolute;
+  left: calc(var(--claw-x, 50) * 1%);
+  top: 24px;
+  z-index: 4;
+  width: 58px;
+  height: 92px;
+  transform: translateX(-50%);
+  transition: left 120ms steps(2, end);
+}
+
+.claw::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  width: 8px;
+  height: 54px;
+  transform: translateX(-50%);
+  background: var(--ink);
+}
+
+.claw span {
+  position: absolute;
+  left: 50%;
+  top: 62px;
+  width: 42px;
+  height: 26px;
+  transform: translateX(-50%);
+  border: 5px solid var(--ink);
+  border-top: 0;
+  background:
+    linear-gradient(var(--ink), var(--ink)) 4px 16px / 8px 22px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 24px 16px / 8px 22px no-repeat,
+    var(--lemon);
+}
+
+.claw.is-dropping {
+  animation: clawDrop 760ms steps(8, end) forwards;
+}
+
+.claw-plush {
+  position: absolute;
+  left: calc(var(--plush-x, 62) * 1%);
+  bottom: 76px;
+  z-index: 3;
+  width: 72px;
+  height: 62px;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(#6bc6ff, #6bc6ff) 7% 8% / 28% 43% no-repeat,
+    linear-gradient(#6bc6ff, #6bc6ff) 65% 8% / 28% 43% no-repeat,
+    linear-gradient(#6bc6ff, #6bc6ff) 26% 25% / 48% 58% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 40% 44% / 7% 8% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 56% 44% / 7% 8% no-repeat,
+    linear-gradient(#bdefff, #bdefff) 42% 58% / 18% 10% no-repeat;
+  image-rendering: pixelated;
+}
+
+.claw-plush.is-caught {
+  animation: plushCaught 900ms steps(8, end) forwards;
+}
+
+.prize-chute {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  z-index: 2;
+  width: 112px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 4px solid var(--ink);
+  background: #fff8fc;
+  color: var(--violet);
+  font-size: 1.25rem;
+  text-transform: uppercase;
+}
+
+.game-hint {
+  min-height: 1.2em;
+}
+
 .memory-list {
   padding-left: 22px;
+}
+
+.whack-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 5px solid var(--ink);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.3), transparent),
+    repeating-linear-gradient(90deg, #ffcfec 0 26px, #fff0aa 26px 52px);
+}
+
+.heart-hole {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 74px;
+  border: 4px solid var(--ink);
+  background:
+    radial-gradient(circle at 50% 62%, #321327 0 26%, transparent 27%),
+    #e7fff6;
+  box-shadow: inset 0 -8px 0 rgba(50, 19, 39, 0.18), 0 5px 0 var(--shadow);
+  cursor: pointer;
+}
+
+.heart-hole::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: 42px;
+  height: 42px;
+  transform: translate(-50%, -50%) scale(0);
+  background:
+    linear-gradient(var(--hot), var(--hot)) 10px 0 / 10px 10px no-repeat,
+    linear-gradient(var(--hot), var(--hot)) 22px 0 / 10px 10px no-repeat,
+    linear-gradient(var(--hot), var(--hot)) 0 10px / 42px 10px no-repeat,
+    linear-gradient(var(--hot), var(--hot)) 5px 20px / 32px 10px no-repeat,
+    linear-gradient(var(--hot), var(--hot)) 16px 30px / 10px 10px no-repeat;
+  image-rendering: pixelated;
+}
+
+.heart-hole.is-up::before {
+  transform: translate(-50%, -58%) scale(1);
+}
+
+.heart-hole.is-bonked {
+  background:
+    radial-gradient(circle at 50% 62%, #321327 0 26%, transparent 27%),
+    #fff0aa;
+}
+
+.whack-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 1.35rem;
+}
+
+.single-action {
+  grid-template-columns: 1fr;
+}
+
+.photo-booth {
+  margin-top: 16px;
+}
+
+.photo-preview {
+  position: relative;
+  overflow: hidden;
+  border: 5px solid var(--ink);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.24), transparent),
+    #ffd3ef;
+  aspect-ratio: 3 / 4;
+}
+
+.photo-preview video,
+.photo-preview canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-preview video {
+  transform: scaleX(-1);
+  background: #321327;
+}
+
+.photo-preview canvas {
+  display: none;
+}
+
+.photo-preview canvas.has-photo {
+  display: block;
+}
+
+.photo-frame {
+  position: absolute;
+  inset: 14px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  pointer-events: none;
+  border: 6px solid var(--ink);
+  box-shadow: inset 0 0 0 8px var(--pink);
+}
+
+.photo-frame span,
+.photo-frame strong,
+.photo-frame small {
+  margin: 10px;
+  padding: 8px;
+  border: 4px solid var(--ink);
+  background: rgba(255, 248, 252, 0.92);
+  text-align: center;
+  font-family: "Press Start 2P", "Courier New", monospace;
+  line-height: 1.55;
+}
+
+.photo-frame span {
+  color: var(--hot);
+  font-size: clamp(0.58rem, 2vw, 0.9rem);
+}
+
+.photo-frame strong {
+  align-self: end;
+  color: var(--violet);
+  font-size: clamp(0.58rem, 2vw, 0.95rem);
+}
+
+.photo-frame small {
+  color: var(--ink);
+  font-size: clamp(0.48rem, 1.7vw, 0.7rem);
+}
+
+.photo-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .mini-game {
@@ -716,6 +1003,33 @@ main {
   }
 }
 
+@keyframes clawDrop {
+  0%,
+  100% {
+    top: 24px;
+  }
+
+  55%,
+  72% {
+    top: 142px;
+  }
+}
+
+@keyframes plushCaught {
+  0% {
+    bottom: 76px;
+  }
+
+  60% {
+    bottom: 180px;
+  }
+
+  100% {
+    left: calc(100% - 70px);
+    bottom: 16px;
+  }
+}
+
 @media (max-width: 860px) {
   .room-header,
   .status-bar {
@@ -727,7 +1041,7 @@ main {
   }
 
   .room-floor {
-    min-height: 1040px;
+    min-height: 1240px;
   }
 
   .wall-sign {
@@ -761,6 +1075,16 @@ main {
     top: 41%;
   }
 
+  .station-whack {
+    left: 5%;
+    top: 62%;
+  }
+
+  .station-photo {
+    right: 5%;
+    bottom: 29%;
+  }
+
   .station-memory {
     left: 5%;
     bottom: 12%;
@@ -789,7 +1113,7 @@ main {
   }
 
   .room-floor {
-    min-height: 1320px;
+    min-height: 1900px;
   }
 
   .station {
@@ -805,28 +1129,37 @@ main {
   }
 
   .station-heart {
-    top: 12%;
+    top: 9%;
   }
 
   .station-mail {
-    top: 27%;
+    top: 21%;
   }
 
   .station-coupon {
-    top: 42%;
+    top: 33%;
   }
 
   .station-plush {
+    top: 45%;
+  }
+
+  .station-whack {
     top: 57%;
   }
 
+  .station-photo {
+    top: 69%;
+    bottom: auto;
+  }
+
   .station-memory {
-    top: 72%;
+    top: 81%;
     bottom: auto;
   }
 
   .station-final {
-    top: 87%;
+    top: 91%;
     bottom: auto;
   }
 

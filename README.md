@@ -7,7 +7,11 @@ Flow:
 1. Opening slot machine gate.
 2. She spins until the reels land on `25 / 25 / 25`.
 3. The page says `HAPPY BIRTHDAY` and opens a cute arcade room.
-4. She explores cabinets to unlock love letters, coupons, a Stitch plushie prize, a heart-catching mini-game, memories, and a final prize vault.
+4. She explores cabinets to unlock love letters, coupons, a playable Stitch plushie claw machine, Heart Catch, Whack-a-Heart, a birthday Photo Booth, memories, and a final prize vault.
+
+## Camera Note
+
+The Photo Booth uses the browser camera API. It will work on HTTPS after deploying to Vercel, and on localhost while testing. The photo is created in the browser and downloaded locally; it is not uploaded anywhere.
 
 ## Personalize
 

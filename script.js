@@ -1,4 +1,6 @@
 const birthdayName = "Player 2";
+const totalRewards = 8;
+const finalUnlockCount = 7;
 const slotValues = ["07", "14", "21", "22", "23", "24", "25"];
 const rewards = new Set();
 
@@ -25,6 +27,15 @@ let playerX = 50;
 let heartX = 40;
 let heartY = -10;
 let gameRunning = false;
+let clawX = 50;
+let plushX = 62;
+let clawBusy = false;
+let whackScore = 0;
+let whackTime = 25;
+let whackActive = false;
+let whackTimer;
+let whackSpawnTimer;
+let activePhotoStream;
 let lastFrame = 0;
 let audioContext;
 let muted = true;
@@ -145,9 +156,9 @@ function addReward(id, amount = 5) {
     rewards.add(id);
     tickets += amount;
     ticketCount.textContent = pad(tickets);
-    rewardCount.textContent = `${rewards.size}/6`;
+    rewardCount.textContent = `${rewards.size}/${totalRewards}`;
     document.querySelector(`[data-station="${id}"]`)?.classList.add("completed");
-    if (rewards.size >= 5) {
+    if (rewards.size >= finalUnlockCount) {
       document.querySelector('[data-station="final"]').classList.remove("locked");
       finalLock.textContent = "Open";
     }
@@ -155,8 +166,8 @@ function addReward(id, amount = 5) {
 }
 
 function openStation(station) {
-  if (station === "final" && rewards.size < 5) {
-    openDialog("Prize vault", "Still locked", `<p>Collect at least 5 rewards around the arcade first.</p>`);
+  if (station === "final" && rewards.size < finalUnlockCount) {
+    openDialog("Prize vault", "Still locked", `<p>Collect ${finalUnlockCount} rewards around the arcade first.</p>`);
     return;
   }
 
@@ -165,6 +176,8 @@ function openStation(station) {
     mail: mailView,
     coupons: couponView,
     plush: plushView,
+    whack: whackView,
+    photo: photoView,
     memory: memoryView,
     final: finalView
   };
@@ -175,7 +188,7 @@ function openDialog(kicker, title, html) {
   dialogKicker.textContent = kicker;
   dialogTitle.textContent = title;
   dialogBody.innerHTML = html;
-  dialog.showModal();
+  if (!dialog.open) dialog.showModal();
   playTone(660);
 }
 
@@ -277,14 +290,290 @@ function couponView() {
 }
 
 function plushView() {
-  addReward("plush");
   openDialog(
     "Claw machine",
-    "Stitch Plushie Won",
-    `<div class="plush-prize" aria-hidden="true"></div>
-    <p>You won the softest imaginary Stitch plushie. Redeemable for one real plushie hunt together.</p>`
+    rewards.has("plush") ? "Stitch Plushie Won" : "Win the Stitch Plushie",
+    `<p>Line up the claw over the plushie, then drop it. You only win if the claw lands close enough.</p>
+    <div class="claw-game" id="claw-game" tabindex="0">
+      <div class="claw-rail" aria-hidden="true"></div>
+      <div class="claw" id="claw" aria-hidden="true">
+        <span></span>
+      </div>
+      <div class="claw-plush" id="claw-plush" aria-hidden="true"></div>
+      <div class="prize-chute" aria-hidden="true">Prize</div>
+    </div>
+    <p class="game-hint" id="claw-hint">${rewards.has("plush") ? "Already claimed, but you can still play again." : "Use Left / Right, then Drop."}</p>
+    <div class="dialog-actions">
+      <button type="button" data-claw-move="-1">Left</button>
+      <button type="button" id="claw-drop">Drop</button>
+      <button type="button" data-claw-move="1">Right</button>
+    </div>`
   );
+  clawX = 50;
+  plushX = 18 + Math.random() * 64;
+  clawBusy = false;
+  setClawPositions();
+  document.querySelectorAll("[data-claw-move]").forEach((button) => {
+    button.addEventListener("click", () => moveClaw(Number(button.dataset.clawMove)));
+  });
+  $("#claw-drop").addEventListener("click", dropClaw);
+}
+
+function setClawPositions() {
+  $("#claw")?.style.setProperty("--claw-x", clawX);
+  $("#claw-plush")?.style.setProperty("--plush-x", plushX);
+}
+
+function moveClaw(direction) {
+  if (clawBusy || !$("#claw-game")) return;
+  clawX = Math.min(88, Math.max(12, clawX + direction * 7));
+  setClawPositions();
+  playTone(420, 0.035);
+}
+
+function dropClaw() {
+  if (clawBusy || !$("#claw-game")) return;
+  const claw = $("#claw");
+  const plush = $("#claw-plush");
+  const hint = $("#claw-hint");
+  const dropButton = $("#claw-drop");
+  const won = Math.abs(clawX - plushX) <= 8;
+
+  clawBusy = true;
+  dropButton.disabled = true;
+  hint.textContent = "Claw descending...";
+  claw?.classList.add("is-dropping");
+  playTone(320, 0.12);
+
+  window.setTimeout(() => {
+    if (won) {
+      plush?.classList.add("is-caught");
+      hint.textContent = "Got it! Stitch plushie unlocked.";
+      addReward("plush");
+      burstConfetti();
+      playWinJingle();
+      window.setTimeout(() => {
+        openDialog(
+          "Claw machine",
+          "Stitch Plushie Won",
+          `<div class="plush-prize" aria-hidden="true"></div>
+          <p>You won the softest imaginary Stitch plushie. Redeemable for one real plushie hunt together.</p>`
+        );
+      }, 900);
+      return;
+    }
+
+    hint.textContent = "So close. Reposition the claw and try again.";
+    claw?.classList.remove("is-dropping");
+    plushX = 18 + Math.random() * 64;
+    clawBusy = false;
+    dropButton.disabled = false;
+    setClawPositions();
+    playTone(180, 0.12);
+  }, 760);
+}
+
+function whackView() {
+  openDialog(
+    "Mini game",
+    "Whack-a-Heart",
+    `<p>Tap the hearts as they pop up. Reach 25 before the timer runs out.</p>
+    <div class="whack-board" id="whack-board" aria-label="Whack-a-heart game">
+      ${Array.from({ length: 9 }, (_, index) => `<button type="button" class="heart-hole" data-hole="${index}" aria-label="Heart hole"></button>`).join("")}
+    </div>
+    <div class="whack-stats">
+      <span>Hits: <strong id="whack-score">00</strong>/25</span>
+      <span>Time: <strong id="whack-time">25</strong></span>
+    </div>
+    <div class="dialog-actions single-action">
+      <button type="button" id="whack-start">Start</button>
+    </div>`
+  );
+  stopWhackGame();
+  whackScore = 0;
+  whackTime = 25;
+  $("#whack-start").addEventListener("click", startWhackGame);
+  document.querySelectorAll(".heart-hole").forEach((hole) => {
+    hole.addEventListener("click", () => hitWhackHeart(hole));
+  });
+}
+
+function startWhackGame() {
+  stopWhackGame();
+  whackScore = 0;
+  whackTime = 25;
+  whackActive = true;
+  $("#whack-score").textContent = "00";
+  $("#whack-time").textContent = "25";
+  $("#whack-start").textContent = "Playing";
+  $("#whack-start").disabled = true;
+  spawnWhackHeart();
+  whackSpawnTimer = window.setInterval(spawnWhackHeart, 720);
+  whackTimer = window.setInterval(() => {
+    whackTime -= 1;
+    $("#whack-time").textContent = pad(whackTime);
+    if (whackTime <= 0) finishWhackGame(false);
+  }, 1000);
+}
+
+function spawnWhackHeart() {
+  if (!whackActive) return;
+  const holes = [...document.querySelectorAll(".heart-hole")];
+  holes.forEach((hole) => hole.classList.remove("is-up", "is-bonked"));
+  const hole = holes[Math.floor(Math.random() * holes.length)];
+  hole?.classList.add("is-up");
+}
+
+function hitWhackHeart(hole) {
+  if (!whackActive || !hole.classList.contains("is-up")) return;
+  hole.classList.remove("is-up");
+  hole.classList.add("is-bonked");
+  whackScore += 1;
+  $("#whack-score").textContent = pad(whackScore);
+  playTone(760 + whackScore * 7, 0.04);
+  if (whackScore >= 25) finishWhackGame(true);
+}
+
+function finishWhackGame(won) {
+  stopWhackGame();
+  if (won) {
+    addReward("whack", 15);
+    openDialog("Reward unlocked", "Heart Bonk Champion", `<p>You tapped 25 hearts. A bundle of birthday tickets popped out of the machine.</p>`);
+    burstConfetti();
+    return;
+  }
+  $("#whack-start").textContent = "Try Again";
+  $("#whack-start").disabled = false;
+  $("#whack-time").textContent = "00";
+}
+
+function stopWhackGame() {
+  whackActive = false;
+  window.clearInterval(whackTimer);
+  window.clearInterval(whackSpawnTimer);
+}
+
+function photoView() {
+  openDialog(
+    "Photo booth",
+    "25th Birthday Snapshot",
+    `<p>Press Start Camera, allow camera access, then snap a picture with the arcade birthday frame.</p>
+    <div class="photo-booth">
+      <div class="photo-preview">
+        <video id="photo-video" autoplay playsinline muted></video>
+        <canvas id="photo-canvas" width="900" height="1200"></canvas>
+        <div class="photo-frame" aria-hidden="true">
+          <span>Happy 25th Birthday</span>
+          <strong>${birthdayName}</strong>
+          <small>Birthday Arcade 2026</small>
+        </div>
+      </div>
+      <p class="game-hint" id="photo-hint">Camera stays on this device only.</p>
+    </div>
+    <div class="dialog-actions photo-actions">
+      <button type="button" id="camera-start">Start Camera</button>
+      <button type="button" id="photo-snap" disabled>Snap</button>
+      <button type="button" id="photo-download" disabled>Download</button>
+    </div>`
+  );
+  stopCamera();
+  $("#camera-start").addEventListener("click", startCamera);
+  $("#photo-snap").addEventListener("click", snapPhoto);
+  $("#photo-download").addEventListener("click", downloadPhoto);
+}
+
+async function startCamera() {
+  const hint = $("#photo-hint");
+  const video = $("#photo-video");
+  if (!navigator.mediaDevices?.getUserMedia) {
+    hint.textContent = "Camera access is not available in this browser.";
+    return;
+  }
+  try {
+    activePhotoStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } },
+      audio: false
+    });
+    video.srcObject = activePhotoStream;
+    $("#photo-snap").disabled = false;
+    hint.textContent = "Pose inside the pixel frame, then snap.";
+  } catch (error) {
+    hint.textContent = "Camera permission was blocked or unavailable.";
+  }
+}
+
+function snapPhoto() {
+  const video = $("#photo-video");
+  const canvas = $("#photo-canvas");
+  const hint = $("#photo-hint");
+  const context = canvas.getContext("2d");
+  if (!video?.videoWidth) {
+    hint.textContent = "Start the camera first, then snap.";
+    return;
+  }
+
+  context.fillStyle = "#ffd3ef";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  const sourceRatio = video.videoWidth / video.videoHeight;
+  const targetRatio = canvas.width / canvas.height;
+  let sourceWidth = video.videoWidth;
+  let sourceHeight = video.videoHeight;
+  let sourceX = 0;
+  let sourceY = 0;
+
+  if (sourceRatio > targetRatio) {
+    sourceWidth = video.videoHeight * targetRatio;
+    sourceX = (video.videoWidth - sourceWidth) / 2;
+  } else {
+    sourceHeight = video.videoWidth / targetRatio;
+    sourceY = (video.videoHeight - sourceHeight) / 2;
+  }
+
+  context.drawImage(video, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, canvas.width, canvas.height);
+  drawPhotoFrame(context, canvas.width, canvas.height);
+  canvas.classList.add("has-photo");
+  $("#photo-download").disabled = false;
+  addReward("photo", 10);
+  hint.textContent = "Perfect. Download the framed birthday photo.";
   burstConfetti();
+  playTone(980, 0.08);
+}
+
+function drawPhotoFrame(context, width, height) {
+  context.lineWidth = 34;
+  context.strokeStyle = "#321327";
+  context.strokeRect(17, 17, width - 34, height - 34);
+  context.lineWidth = 20;
+  context.strokeStyle = "#ff5ebc";
+  context.strokeRect(46, 46, width - 92, height - 92);
+  context.fillStyle = "rgba(255, 248, 252, 0.92)";
+  context.fillRect(70, height - 230, width - 140, 150);
+  context.fillStyle = "#ff2f93";
+  context.font = "54px 'Press Start 2P', monospace";
+  context.textAlign = "center";
+  context.fillText("HAPPY 25TH", width / 2, height - 158);
+  context.fillStyle = "#7b3ff2";
+  context.font = "40px 'Press Start 2P', monospace";
+  context.fillText("BIRTHDAY", width / 2, height - 102);
+  context.fillStyle = "#fff07a";
+  for (let i = 0; i < 18; i += 1) {
+    const x = 70 + ((i * 47) % (width - 140));
+    const y = i % 2 === 0 ? 78 : height - 52;
+    context.fillRect(x, y, 18, 18);
+  }
+}
+
+function downloadPhoto() {
+  const canvas = $("#photo-canvas");
+  const link = document.createElement("a");
+  link.download = "birthday-arcade-photo.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+function stopCamera() {
+  activePhotoStream?.getTracks().forEach((track) => track.stop());
+  activePhotoStream = undefined;
 }
 
 function memoryView() {
@@ -361,9 +650,15 @@ document.querySelectorAll("[data-station]").forEach((button) => {
 document.addEventListener("keydown", (event) => {
   if (dialog.open && (event.key === "ArrowLeft" || event.key.toLowerCase() === "a")) moveMiniPlayer(-1);
   if (dialog.open && (event.key === "ArrowRight" || event.key.toLowerCase() === "d")) moveMiniPlayer(1);
+  if (dialog.open && event.key === "ArrowLeft") moveClaw(-1);
+  if (dialog.open && event.key === "ArrowRight") moveClaw(1);
+  if (dialog.open && event.key === " ") dropClaw();
 });
 dialog.addEventListener("close", () => {
   gameRunning = false;
+  clawBusy = false;
+  stopWhackGame();
+  stopCamera();
 });
 window.addEventListener("resize", resizeConfetti);
 resizeConfetti();
