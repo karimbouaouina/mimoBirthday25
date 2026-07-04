@@ -307,18 +307,57 @@ main {
   place-items: center;
 }
 
-.room-floor {
+.room-stage {
   position: relative;
   width: min(1180px, 100%);
-  min-height: 680px;
   margin: 0 auto;
+}
+
+.room-viewport {
+  width: 100%;
   overflow: hidden;
   border: 7px solid var(--ink);
+  box-shadow: 0 16px 0 var(--shadow), 0 28px 48px rgba(50, 19, 39, 0.28);
+  scroll-behavior: smooth;
+}
+
+.room-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 8;
+  width: 58px;
+  height: 74px;
+  transform: translateY(-50%);
+  border: 5px solid var(--ink);
+  background: var(--lemon);
+  color: var(--violet);
+  box-shadow: 0 7px 0 var(--shadow);
+  cursor: pointer;
+  font-size: 1.55rem;
+}
+
+.room-nav-left {
+  left: -28px;
+}
+
+.room-nav-right {
+  right: -28px;
+}
+
+.room-nav:active {
+  transform: translateY(calc(-50% + 5px));
+  box-shadow: 0 2px 0 var(--shadow);
+}
+
+.room-floor {
+  position: relative;
+  width: 2200px;
+  height: 680px;
+  overflow: hidden;
   background:
     linear-gradient(rgba(255, 255, 255, 0.25), transparent 34%),
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.32) 0 2px, transparent 2px 34px),
     linear-gradient(#ffbee1 0 40%, #9df7d3 40% 43%, #7b3ff2 43% 100%);
-  box-shadow: 0 16px 0 var(--shadow), 0 28px 48px rgba(50, 19, 39, 0.28);
 }
 
 .room-floor::after {
@@ -337,7 +376,7 @@ main {
 
 .wall-sign {
   position: absolute;
-  left: 50%;
+  left: 1090px;
   top: 24px;
   z-index: 2;
   display: flex;
@@ -485,49 +524,49 @@ main {
 }
 
 .station-heart {
-  left: 6%;
-  top: 24%;
+  left: 120px;
+  top: 218px;
 }
 
 .station-mail {
-  left: 26%;
-  top: 18%;
+  left: 390px;
+  top: 145px;
 }
 
 .station-coupon {
-  right: 28%;
-  top: 20%;
+  left: 690px;
+  top: 226px;
 }
 
 .station-plush {
-  right: 7%;
-  top: 28%;
+  left: 980px;
+  top: 145px;
 }
 
 .station-whack {
-  left: 43%;
-  top: 42%;
+  left: 1260px;
+  top: 246px;
 }
 
 .station-photo {
-  right: 38%;
-  bottom: 9%;
+  left: 1530px;
+  top: 150px;
 }
 
 .station-memory {
-  left: 15%;
-  bottom: 9%;
+  left: 1700px;
+  top: 382px;
 }
 
 .station-final {
-  right: 18%;
-  bottom: 8%;
+  left: 1940px;
+  top: 236px;
 }
 
 .room-player {
   position: absolute;
-  left: 50%;
-  bottom: 19%;
+  left: calc(var(--room-player-x, 170) * 1px);
+  bottom: 128px;
   z-index: 4;
   width: 58px;
   height: 72px;
@@ -541,6 +580,7 @@ main {
     linear-gradient(var(--ink), var(--ink)) 15px 66px / 10px 6px no-repeat,
     linear-gradient(var(--ink), var(--ink)) 35px 66px / 10px 6px no-repeat;
   image-rendering: pixelated;
+  transition: left 220ms steps(5, end);
 }
 
 .bow {
@@ -625,6 +665,31 @@ main {
   margin: 8px 0 0;
 }
 
+.coupon strong {
+  display: block;
+  margin-top: 8px;
+  font-family: "Press Start 2P", "Courier New", monospace;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.coupon button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 10px;
+  border: 4px solid var(--ink);
+  background: var(--mint);
+  color: var(--ink);
+  box-shadow: 0 5px 0 var(--shadow);
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.coupon button:disabled,
+.coupon.is-redeemed {
+  filter: saturate(0.65);
+}
+
 .plush-prize {
   width: 160px;
   height: 130px;
@@ -681,7 +746,7 @@ main {
   z-index: 4;
   width: 58px;
   height: 92px;
-  transform: translateX(-50%);
+  transform: translateX(calc(-50% + var(--claw-wiggle, 0%)));
   transition: left 120ms steps(2, end);
 }
 
@@ -712,6 +777,7 @@ main {
 }
 
 .claw.is-dropping {
+  transform: translateX(calc(-50% + var(--drop-drift, 0%)));
   animation: clawDrop 760ms steps(8, end) forwards;
 }
 
@@ -1041,7 +1107,8 @@ main {
   }
 
   .room-floor {
-    min-height: 1240px;
+    height: 680px;
+    min-height: 0;
   }
 
   .wall-sign {
@@ -1054,49 +1121,55 @@ main {
   }
 
   .station-heart {
-    left: 5%;
-    top: 16%;
+    left: 120px;
+    top: 218px;
   }
 
   .station-mail {
-    right: 5%;
-    left: auto;
-    top: 18%;
+    right: auto;
+    left: 390px;
+    top: 145px;
   }
 
   .station-coupon {
-    left: 5%;
+    left: 690px;
     right: auto;
-    top: 39%;
+    top: 226px;
   }
 
   .station-plush {
-    right: 5%;
-    top: 41%;
+    right: auto;
+    left: 980px;
+    top: 145px;
   }
 
   .station-whack {
-    left: 5%;
-    top: 62%;
+    left: 1260px;
+    top: 246px;
   }
 
   .station-photo {
-    right: 5%;
-    bottom: 29%;
+    right: auto;
+    left: 1530px;
+    top: 150px;
+    bottom: auto;
   }
 
   .station-memory {
-    left: 5%;
-    bottom: 12%;
+    left: 1700px;
+    top: 382px;
+    bottom: auto;
   }
 
   .station-final {
-    right: 5%;
-    bottom: 10%;
+    right: auto;
+    left: 1940px;
+    top: 236px;
+    bottom: auto;
   }
 
   .room-player {
-    bottom: 35%;
+    bottom: 128px;
   }
 }
 
@@ -1113,58 +1186,67 @@ main {
   }
 
   .room-floor {
-    min-height: 1900px;
+    height: 680px;
+    min-height: 0;
   }
 
   .station {
-    left: 50% !important;
+    left: auto !important;
     right: auto !important;
     width: min(240px, calc(100% - 42px));
-    transform: translateX(-50%);
+    transform: none;
   }
 
   .station:hover,
   .station:focus-visible {
-    transform: translate(-50%, -8px);
+    transform: translateY(-8px);
   }
 
   .station-heart {
-    top: 9%;
+    left: 120px !important;
+    top: 218px;
   }
 
   .station-mail {
-    top: 21%;
+    left: 390px !important;
+    top: 145px;
   }
 
   .station-coupon {
-    top: 33%;
+    left: 690px !important;
+    top: 226px;
   }
 
   .station-plush {
-    top: 45%;
+    left: 980px !important;
+    top: 145px;
   }
 
   .station-whack {
-    top: 57%;
+    left: 1260px !important;
+    top: 246px;
   }
 
   .station-photo {
-    top: 69%;
+    left: 1530px !important;
+    top: 150px;
     bottom: auto;
   }
 
   .station-memory {
-    top: 81%;
+    left: 1700px !important;
+    top: 382px;
     bottom: auto;
   }
 
   .station-final {
-    top: 91%;
+    left: 1940px !important;
+    top: 236px;
     bottom: auto;
   }
 
   .room-player {
-    display: none;
+    display: block;
   }
 }
 

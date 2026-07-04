@@ -9,6 +9,10 @@ Flow:
 3. The page says `HAPPY BIRTHDAY` and opens a cute arcade room.
 4. She explores cabinets to unlock love letters, coupons, a playable Stitch plushie claw machine, Heart Catch, Whack-a-Heart, a birthday Photo Booth, memories, and a final prize vault.
 
+The arcade room is wider than the screen. Use the left/right arrow buttons, or keyboard `A` / `D` and arrow keys, to walk the character through the room.
+
+Coupons are redeemed with tickets earned from games. Opening the coupon booth no longer grants the coupon reward by itself; she has to spend tickets on a coupon.
+
 ## Camera Note
 
 The Photo Booth uses the browser camera API. It will work on HTTPS after deploying to Vercel, and on localhost while testing. The photo is created in the browser and downloaded locally; it is not uploaded anywhere.

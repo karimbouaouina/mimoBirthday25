@@ -8,6 +8,8 @@ const $ = (selector) => document.querySelector(selector);
 const reels = [$("#reel-1"), $("#reel-2"), $("#reel-3")];
 const slotGate = $("#slot-gate");
 const arcadeRoom = $("#arcade-room");
+const roomViewport = $("#room-viewport");
+const roomPlayer = $("#room-player");
 const spinButton = $("#spin-button");
 const slotMessage = $("#slot-message");
 const ticketCount = $("#ticket-count");
@@ -19,9 +21,11 @@ const dialogTitle = $("#dialog-title");
 const dialogBody = $("#dialog-body");
 const confettiCanvas = $("#confetti");
 const confettiContext = confettiCanvas.getContext("2d");
+const redeemedCoupons = new Set();
 
 let spinCount = 0;
 let tickets = 0;
+let roomX = 170;
 let heartScore = 0;
 let playerX = 50;
 let heartX = 40;
@@ -30,12 +34,14 @@ let gameRunning = false;
 let clawX = 50;
 let plushX = 62;
 let clawBusy = false;
+let clawDrift = 0;
 let whackScore = 0;
 let whackTime = 25;
 let whackActive = false;
 let whackTimer;
 let whackSpawnTimer;
 let activePhotoStream;
+let clawWiggleTimer;
 let lastFrame = 0;
 let audioContext;
 let muted = true;
@@ -60,10 +66,10 @@ const letters = [
 ];
 
 const coupons = [
-  "One emergency hug, no questions asked.",
-  "One cute food date, your choice.",
-  "One movie night where you control the snacks and the playlist.",
-  "One day of being spoiled extra dramatically."
+  { title: "Emergency Hug", cost: 10, text: "One emergency hug, no questions asked." },
+  { title: "Food Date", cost: 15, text: "One cute food date, your choice." },
+  { title: "Movie Night", cost: 20, text: "One movie night where you control the snacks and the playlist." },
+  { title: "Spoil Day", cost: 25, text: "One day of being spoiled extra dramatically." }
 ];
 
 function pad(value) {
@@ -142,6 +148,7 @@ function finishSpin() {
 function enterArcade() {
   slotGate.classList.add("is-hidden");
   arcadeRoom.classList.remove("is-hidden");
+  updateRoomPosition(roomX, false);
   burstConfetti();
 }
 
@@ -163,6 +170,35 @@ function addReward(id, amount = 5) {
       finalLock.textContent = "Open";
     }
   }
+}
+
+function spendTickets(amount) {
+  if (tickets < amount) return false;
+  tickets -= amount;
+  ticketCount.textContent = pad(tickets);
+  return true;
+}
+
+function updateRoomPosition(nextX, smooth = true) {
+  const floor = $("#room-floor");
+  if (!floor || !roomViewport || !roomPlayer) return;
+  roomX = Math.min(floor.offsetWidth - 120, Math.max(120, nextX));
+  roomPlayer.style.setProperty("--room-player-x", roomX);
+  const targetScroll = Math.min(
+    floor.offsetWidth - roomViewport.clientWidth,
+    Math.max(0, roomX - roomViewport.clientWidth / 2)
+  );
+  roomViewport.scrollTo({ left: targetScroll, behavior: smooth ? "smooth" : "auto" });
+}
+
+function moveRoom(direction) {
+  updateRoomPosition(roomX + direction * 360);
+  playTone(360, 0.04);
+}
+
+function moveToStation(stationButton) {
+  const center = stationButton.offsetLeft + stationButton.offsetWidth / 2;
+  updateRoomPosition(center);
 }
 
 function openStation(station) {
@@ -283,17 +319,51 @@ function mailView() {
 
 function couponView() {
   const html = coupons
-    .map((coupon) => `<div class="coupon"><span>Coupon</span><p>${coupon}</p></div>`)
+    .map(
+      (coupon, index) => `<div class="coupon ${redeemedCoupons.has(index) ? "is-redeemed" : ""}">
+        <span>${coupon.cost} tickets</span>
+        <strong>${coupon.title}</strong>
+        <p>${coupon.text}</p>
+        <button type="button" data-coupon="${index}" ${redeemedCoupons.has(index) ? "disabled" : ""}>
+          ${redeemedCoupons.has(index) ? "Redeemed" : "Redeem"}
+        </button>
+      </div>`
+    )
     .join("");
-  addReward("coupons");
-  openDialog("Reward booth", "Cute Coupons", `<div class="coupon-grid">${html}</div>`);
+  openDialog(
+    "Ticket booth",
+    "Redeem Cute Coupons",
+    `<p>Spend tickets from the games to claim coupons. Current balance: <strong id="coupon-balance">${pad(tickets)}</strong>.</p>
+    <div class="coupon-grid">${html}</div>`
+  );
+  document.querySelectorAll("[data-coupon]").forEach((button) => {
+    button.addEventListener("click", () => redeemCoupon(Number(button.dataset.coupon)));
+  });
+}
+
+function redeemCoupon(index) {
+  const coupon = coupons[index];
+  if (!coupon || redeemedCoupons.has(index)) return;
+  if (!spendTickets(coupon.cost)) {
+    $("#coupon-balance").textContent = pad(tickets);
+    openDialog("Ticket booth", "Need More Tickets", `<p>${coupon.title} costs ${coupon.cost} tickets. Win more games and come back.</p>`);
+    return;
+  }
+  redeemedCoupons.add(index);
+  addReward("coupons", 0);
+  openDialog(
+    "Coupon redeemed",
+    coupon.title,
+    `<div class="coupon is-redeemed"><span>Redeemed</span><strong>${coupon.title}</strong><p>${coupon.text}</p></div>`
+  );
+  burstConfetti();
 }
 
 function plushView() {
   openDialog(
     "Claw machine",
     rewards.has("plush") ? "Stitch Plushie Won" : "Win the Stitch Plushie",
-    `<p>Line up the claw over the plushie, then drop it. You only win if the claw lands close enough.</p>
+    `<p>Line up the claw over the plushie, then drop it. The machine wobbles, so you need a clean center hit.</p>
     <div class="claw-game" id="claw-game" tabindex="0">
       <div class="claw-rail" aria-hidden="true"></div>
       <div class="claw" id="claw" aria-hidden="true">
@@ -310,9 +380,11 @@ function plushView() {
     </div>`
   );
   clawX = 50;
-  plushX = 18 + Math.random() * 64;
+  plushX = 14 + Math.random() * 72;
+  clawDrift = 0;
   clawBusy = false;
   setClawPositions();
+  startClawWiggle();
   document.querySelectorAll("[data-claw-move]").forEach((button) => {
     button.addEventListener("click", () => moveClaw(Number(button.dataset.clawMove)));
   });
@@ -326,7 +398,7 @@ function setClawPositions() {
 
 function moveClaw(direction) {
   if (clawBusy || !$("#claw-game")) return;
-  clawX = Math.min(88, Math.max(12, clawX + direction * 7));
+  clawX = Math.min(90, Math.max(10, clawX + direction * 5));
   setClawPositions();
   playTone(420, 0.035);
 }
@@ -337,12 +409,15 @@ function dropClaw() {
   const plush = $("#claw-plush");
   const hint = $("#claw-hint");
   const dropButton = $("#claw-drop");
-  const won = Math.abs(clawX - plushX) <= 8;
+  const landedX = clawX + clawDrift + (Math.random() * 4 - 2);
+  const won = Math.abs(landedX - plushX) <= 4;
 
   clawBusy = true;
+  stopClawWiggle();
   dropButton.disabled = true;
-  hint.textContent = "Claw descending...";
+  hint.textContent = "Claw descending... steady...";
   claw?.classList.add("is-dropping");
+  claw?.style.setProperty("--drop-drift", `${landedX - clawX}%`);
   playTone(320, 0.12);
 
   window.setTimeout(() => {
@@ -365,12 +440,28 @@ function dropClaw() {
 
     hint.textContent = "So close. Reposition the claw and try again.";
     claw?.classList.remove("is-dropping");
-    plushX = 18 + Math.random() * 64;
+    claw?.style.setProperty("--drop-drift", "0%");
+    plushX = 14 + Math.random() * 72;
+    clawDrift = 0;
     clawBusy = false;
     dropButton.disabled = false;
     setClawPositions();
+    startClawWiggle();
     playTone(180, 0.12);
   }, 760);
+}
+
+function startClawWiggle() {
+  stopClawWiggle();
+  clawWiggleTimer = window.setInterval(() => {
+    if (!$("#claw-game") || clawBusy) return;
+    clawDrift = Math.sin(Date.now() / 260) * 2.8;
+    $("#claw")?.style.setProperty("--claw-wiggle", `${clawDrift}%`);
+  }, 80);
+}
+
+function stopClawWiggle() {
+  window.clearInterval(clawWiggleTimer);
 }
 
 function whackView() {
@@ -645,20 +736,29 @@ function drawConfetti() {
 spinButton.addEventListener("click", spinSlot);
 $("#sound-toggle").addEventListener("click", toggleSound);
 document.querySelectorAll("[data-station]").forEach((button) => {
-  button.addEventListener("click", () => openStation(button.dataset.station));
+  button.addEventListener("click", () => {
+    moveToStation(button);
+    window.setTimeout(() => openStation(button.dataset.station), 180);
+  });
 });
+$("#room-left").addEventListener("click", () => moveRoom(-1));
+$("#room-right").addEventListener("click", () => moveRoom(1));
 document.addEventListener("keydown", (event) => {
   if (dialog.open && (event.key === "ArrowLeft" || event.key.toLowerCase() === "a")) moveMiniPlayer(-1);
   if (dialog.open && (event.key === "ArrowRight" || event.key.toLowerCase() === "d")) moveMiniPlayer(1);
   if (dialog.open && event.key === "ArrowLeft") moveClaw(-1);
   if (dialog.open && event.key === "ArrowRight") moveClaw(1);
   if (dialog.open && event.key === " ") dropClaw();
+  if (!dialog.open && arcadeRoom && !arcadeRoom.classList.contains("is-hidden") && (event.key === "ArrowLeft" || event.key.toLowerCase() === "a")) moveRoom(-1);
+  if (!dialog.open && arcadeRoom && !arcadeRoom.classList.contains("is-hidden") && (event.key === "ArrowRight" || event.key.toLowerCase() === "d")) moveRoom(1);
 });
 dialog.addEventListener("close", () => {
   gameRunning = false;
   clawBusy = false;
+  stopClawWiggle();
   stopWhackGame();
   stopCamera();
 });
 window.addEventListener("resize", resizeConfetti);
+window.addEventListener("resize", () => updateRoomPosition(roomX, false));
 resizeConfetti();

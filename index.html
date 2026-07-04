@@ -70,65 +70,71 @@
           </div>
         </header>
 
-        <section class="room-floor" aria-label="Explore arcade room">
-          <div class="wall-sign">
-            <span>25</span>
-            <p>Birthday Arcade</p>
-            <span>25</span>
+        <div class="room-stage">
+          <button class="room-nav room-nav-left" id="room-left" type="button" aria-label="Go left">◀</button>
+          <div class="room-viewport" id="room-viewport">
+            <section class="room-floor" id="room-floor" aria-label="Explore arcade room">
+              <div class="wall-sign">
+                <span>25</span>
+                <p>Birthday Arcade</p>
+                <span>25</span>
+              </div>
+
+              <button class="station station-heart" type="button" data-station="heart">
+                <span class="cabinet-art heart-art"></span>
+                <strong>Heart Catch</strong>
+                <small>Win 25 hearts</small>
+              </button>
+
+              <button class="station station-mail" type="button" data-station="mail">
+                <span class="cabinet-art letter-art"></span>
+                <strong>Love Mail</strong>
+                <small>Open letters</small>
+              </button>
+
+              <button class="station station-coupon" type="button" data-station="coupons">
+                <span class="cabinet-art coupon-art"></span>
+                <strong>Coupon Booth</strong>
+                <small>Redeem tickets</small>
+              </button>
+
+              <button class="station station-plush" type="button" data-station="plush">
+                <span class="cabinet-art stitch-art"></span>
+                <strong>Plush Claw</strong>
+                <small>Special prize</small>
+              </button>
+
+              <button class="station station-whack" type="button" data-station="whack">
+                <span class="cabinet-art whack-art"></span>
+                <strong>Whack-a-Heart</strong>
+                <small>Tap 25 hearts</small>
+              </button>
+
+              <button class="station station-photo" type="button" data-station="photo">
+                <span class="cabinet-art photo-art"></span>
+                <strong>Photo Booth</strong>
+                <small>Framed picture</small>
+              </button>
+
+              <button class="station station-memory" type="button" data-station="memory">
+                <span class="cabinet-art memory-art"></span>
+                <strong>Memory Quest</strong>
+                <small>Tiny promises</small>
+              </button>
+
+              <button class="station station-final locked" type="button" data-station="final">
+                <span class="cabinet-art trophy-art"></span>
+                <strong>Final Prize</strong>
+                <small id="final-lock">Locked</small>
+              </button>
+
+              <div class="room-player" id="room-player" aria-hidden="true">
+                <span class="bow"></span>
+              </div>
+            </section>
           </div>
-
-          <button class="station station-heart" type="button" data-station="heart">
-            <span class="cabinet-art heart-art"></span>
-            <strong>Heart Catch</strong>
-            <small>Win 25 hearts</small>
-          </button>
-
-          <button class="station station-mail" type="button" data-station="mail">
-            <span class="cabinet-art letter-art"></span>
-            <strong>Love Mail</strong>
-            <small>Open letters</small>
-          </button>
-
-          <button class="station station-coupon" type="button" data-station="coupons">
-            <span class="cabinet-art coupon-art"></span>
-            <strong>Coupon Booth</strong>
-            <small>Claim treats</small>
-          </button>
-
-          <button class="station station-plush" type="button" data-station="plush">
-            <span class="cabinet-art stitch-art"></span>
-            <strong>Plush Claw</strong>
-            <small>Special prize</small>
-          </button>
-
-          <button class="station station-whack" type="button" data-station="whack">
-            <span class="cabinet-art whack-art"></span>
-            <strong>Whack-a-Heart</strong>
-            <small>Tap 25 hearts</small>
-          </button>
-
-          <button class="station station-photo" type="button" data-station="photo">
-            <span class="cabinet-art photo-art"></span>
-            <strong>Photo Booth</strong>
-            <small>Framed picture</small>
-          </button>
-
-          <button class="station station-memory" type="button" data-station="memory">
-            <span class="cabinet-art memory-art"></span>
-            <strong>Memory Quest</strong>
-            <small>Tiny promises</small>
-          </button>
-
-          <button class="station station-final locked" type="button" data-station="final">
-            <span class="cabinet-art trophy-art"></span>
-            <strong>Final Prize</strong>
-            <small id="final-lock">Locked</small>
-          </button>
-
-          <div class="room-player" aria-hidden="true">
-            <span class="bow"></span>
-          </div>
-        </section>
+          <button class="room-nav room-nav-right" id="room-right" type="button" aria-label="Go right">▶</button>
+        </div>
       </section>
     </main>
 
